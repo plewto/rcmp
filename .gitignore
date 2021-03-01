@@ -1,0 +1,9 @@
+
+env
+__pycache__
+*.pyc
+
+# Emacs 
+.backup
+[#]*[#]
+.\#*

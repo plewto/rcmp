@@ -1,0 +1,10 @@
+# Adar requirements
+#
+# A suitable midi backend
+# See mido documentation for details.
+# Using portmidi by default.
+#
+
+mido
+osc4py3
+
