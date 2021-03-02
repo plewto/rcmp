@@ -37,7 +37,6 @@ def create_argparse():
 
     parser.add_argument("-p", "--play", default=False, action="store_true",
                         help="Start playback of initial file immediately.")
-
     return parser
 
 
@@ -55,7 +54,7 @@ def extract_file_argument(argv):
         elif _is_directory(final):
             return final, False, argv[1:-1]
         else:
-            return final, False, argv
+            return final, False, argv[1:]
     else:
         return None, False, []
     
