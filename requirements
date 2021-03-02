@@ -1,10 +1,10 @@
-# Adar requirements
+# rcmp requirements
 #
 # python 3
 #
 # A suitable midi backend, see mido documentation for details.
 # https://mido.readthedocs.io/en/stable/backends.html
-# Using portmidi by default.
+# Ubuntu comes with portmidi pre-installed.
 #
 
 python -m pip install mido

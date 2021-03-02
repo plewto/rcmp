@@ -226,10 +226,6 @@ class Rcmp:
         if args["docs"]:
             print(rcmp.docs.DOCS)
             sys.exit(0)
-
-        if args["info"]:
-            print(APP.media_list.selected_file_info())
-            sys.exit(0)
         
         APP._auto_exit = args["exit"]
         cls._configure_midi_backend(APP, args)
