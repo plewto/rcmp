@@ -2,8 +2,10 @@
 
 import os.path
 import sys
+from threading import Thread
 import time
 import mido
+
 import adar.media
 import adar.options
 import adar.keyhandler
@@ -14,6 +16,7 @@ APP = None
 class Adar:
 
     def __init__(self):
+        self._poll_thread = None
         self._midi_backend = None
         self._midi_output_name = None
         self._midi_output_port = None
@@ -50,36 +53,60 @@ class Adar:
     @property
     def osc_prefix(self):
         return self._osc_prefix
-      
-    def poll_osc(self):
-        self._osc_handler.poll()
 
-    def poll_keyboard(self):
-        self._key_handler.poll()
+    def poll_user(self, *args):
+        while not self.exit_signal:
+            self._osc_handler.poll()
+            self._key_handler.poll()
 
-    def all_notes_off(self):
-        print("All notes off", flush=True)
+    def start_poll_loop(self):
+        self._poll_thread = Thread(target=self.poll_user)
+        self._poll_thread.start()
+        
+    def midi_reset(self):
+
+        def controller(channel, controller, value):
+            msg = mido.Message("control_change", channel=channel, control=controller, value=value)
+            self._midi_output_port.send(msg)
+            
+        self._midi_output_port.send(mido.Message("reset"))
         for c in range(0, 16):
-            for key in range(0, 127):
-                msg = mido.Message("note_off", channel=c, note=key, time=0.0)
+            controller(c, 1, 0)     # reset modulation wheel
+            controller(c, 69, 0)    # sustain pedal off
+            controller(c, 123, 127) # all notes off
+            controller(c, 10, 127)  # volume
+            for key in range(0, 128):
+                msg = mido.Message("note_off", channel=c, note=key)
                 self._midi_output_port.send(msg)
-                if key % 12 == 0:
+                if key % 10 == 0:
                     time.sleep(0.001)
 
     def _play_mode_loop(self):
         midi_file = self.media_list.midi_file()
+        note_queue = []
         if midi_file and self._midi_output_port:
             for msg in midi_file:
                 time.sleep(msg.time)
                 if not msg.is_meta:
-                    self._midi_output_port.send(msg)  ## TODO 
+                    self._midi_output_port.send(msg)
+                    typ = msg.type
+                    if typ == "note_on" and msg.velocity > 0:
+                        note_queue.append((msg.channel, msg.note))
+                    elif typ == "note_off" or (typ=="note_on" and msg.velocity==0):
+                        note_queue.remove((msg.channel, msg.note))
                 if self.stop_signal or self.exit_signal:
                     break
+                
             self.stop_signal = True
+            # Kill all notes in queue
+            for chan, key in note_queue:
+                msg = mido.Message("note_off", channel=chan, note=key)
+                self._midi_output_port.send(msg)
+                time.sleep(0.001)
             if self._auto_exit:
                 self.exit(0)
             else:
-                self.all_notes_off()
+                self.midi_reset()
 
     def _stop_mode_loop(self):
         while self.stop_signal and not self.exit_signal:
@@ -121,7 +148,7 @@ class Adar:
 
     def exit(self, code=0):
         self._key_handler.close()
-        self.all_notes_off()
+        self.midi_reset()
         # TODO close mido port
         # TODO close osc
         sys.exit(code)
@@ -212,5 +239,7 @@ class Adar:
         
         if args["play"] and APP.media_list.current_item:
             APP.stop_signal = False
+        APP.start_poll_loop()
+        print("Starting mainloop")
         APP.mainloop()
         
