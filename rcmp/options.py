@@ -8,9 +8,6 @@ import os.path
 def create_argparse():
     parser = argparse.ArgumentParser(description="Play MIDI files under OSC control.")
 
-    parser.add_argument("-i", "--info", default=False, action="store_true",
-                        help="Print information about MIDI file and exit.")
-
     parser.add_argument("-l", "--list", default=False, action="store_true",
                         help="List available MIDI outputs and exit.")
 
