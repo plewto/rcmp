@@ -1,5 +1,7 @@
-# Adar application launcer
+# rcmp application launcer.
 # 
+# Usage python3 main.py [options] [midifile-or-directory]
+#
 
 import sys
 
