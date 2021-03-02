@@ -1,33 +1,33 @@
-# adar oschandler
+# rcmp oschandler
 
 import pyOSC3
 import sys
 
 OSC_HELP = """
-Adar OSC Commands:
+Rcmp OSC Commands:
 
-/adar/exit
+/rcmp/exit
     Terminate application.
     
-/adar/play
+/rcmp/play
     Start playback of selected MIDI file.
     
-/adar/stop
+/rcmp/stop
     Stop playback.
     
-/adar/list
+/rcmp/list
     Display media-list contents.
     
-/adar/info
+/rcmp/info
     Display details about currently selected MIDI file.
     
-/adar/scan directory
+/rcmp/scan directory
     Load each MIDI file in directory into media-list.
     
-/adar/select file
+/rcmp/select file
     Select file from media-list.
 
-/adar/help
+/rcmp/help
     Display this message.
 """
 

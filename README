@@ -1,31 +1,6 @@
-Adar  ~ A terminal based MIDI File Player with remote OSC control.
-
-From "A Comprehensive Dictionary of Musical Instruments", 1964 by
-Sibyl Marcuse, an Adar is a Basque Cow Horn.
+rcmp  ~ Remote Controlled MIDI file player.
 
 
-osc Commands:
-
-/adar/exit
-    Terminate application.
-    
-/adar/play
-    Start playback of selected MIDI file.
-    
-/adar/stop
-    Stop playback.
-    
-/adar/list
-    Display media-list contents.
-    
-/adar/info
-    Display details about currently selected MIDI file.
-    
-/adar/scan directory
-    Load each MIDI file in directory into media-list.
-    
-/adar/select file
-    Select file from media-list.
 
 
 

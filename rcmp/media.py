@@ -1,4 +1,4 @@
-# adar.media
+# rcmp.media
 #
 # Defines MediaItem and MediaList classes.
 #

@@ -1,4 +1,4 @@
-# adar.adar
+# rcmp.rcmp
 
 import os.path
 import sys
@@ -6,13 +6,13 @@ from threading import Thread
 import time
 import mido
 
-import adar.media
-import adar.options
-import adar.oschandler
+import rcmp.media
+import rcmp.options
+import rcmp.oschandler
 
 APP = None
 
-class Adar:
+class Rcmp:
 
     def __init__(self):
         self._osc_poll_thread = None
@@ -26,7 +26,7 @@ class Adar:
         self._auto_exit = False
         self.stop_signal = True
         self.exit_signal = False
-        self.media_list = adar.media.MediaList(self)
+        self.media_list = rcmp.media.MediaList(self)
         
     @property
     def midi_backend(self):
@@ -136,7 +136,7 @@ class Adar:
                 self.media_list.select(lst[0])
 
     def dump(self):
-        print("Adar application state:")
+        print("Rcmp application state:")
         print(f"\tself._midi_backend      --> {self._midi_backend}")
         print(f"\tself._midi_output_name  --> {self._midi_output_name}")
         print(f"\tself._midi_output_port  --> {self._midi_output_port}")
@@ -200,7 +200,7 @@ class Adar:
         app._osc_port = int(args["port"])
         app._osc_ip = args["ip"]
         app._osc_prefix = args["osc"]
-        app._osc_handler = adar.oschandler.OSCHandler(app)
+        app._osc_handler = rcmp.oschandler.OSCHandler(app)
              
     @classmethod
     def list_midi_outputs(cls, app):
@@ -213,9 +213,9 @@ class Adar:
     @classmethod
     def run(cls, argv):
         global APP
-        APP = Adar()
-        parser = adar.options.create_argparse()
-        file_argument, is_file, argv = adar.options.extract_file_argument(argv)
+        APP = Rcmp()
+        parser = rcmp.options.create_argparse()
+        file_argument, is_file, argv = rcmp.options.extract_file_argument(argv)
         args = vars(parser.parse_args(argv))
         APP._configure_media_list(file_argument, is_file)
         
