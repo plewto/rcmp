@@ -27,7 +27,7 @@ def create_argparse():
     parser.add_argument("--port", type=int, default=7000,
                         help="Set OSC port number.")
 
-    parser.add_argument("--osc", type=str, default="/mfp",
+    parser.add_argument("--osc", type=str, default="/adar",
                         help="Set OSC address prefix.")
 
     parser.add_argument("--ip", type=str, default="127.0.0.1",

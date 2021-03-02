@@ -47,7 +47,7 @@ class MediaItem:
         except OSError:
             msg = f"ERROR: Either '{self.filename}'\n"
             msg += "ERROR: does not exists or it is not a MIDI file."
-            print(msg)
+            # print(msg)  # Do not directly call print, use Keyhandler print function.
             return None
 
     def __str__(self):
@@ -81,7 +81,7 @@ class MediaList:
         ext = path.splitext(filename)[-1].lower()
         return ext in cls.EXTENSIONS
     
-    def __init__(self, directory=None):
+    def __init__(self, app, directory=None):
         """
         Constructs new instance of MediaList.
 
@@ -90,11 +90,11 @@ class MediaList:
                     If specified, the list is populated with all MIDI files found within 
                     the directory and the first file is 'selected'. 
         """
+        self.app = app
         self._items = {}
         self._directory = None
         self._current_item = None
-        if directory:
-            self.scan_directory(directory)
+       
 
     @property
     def current_item(self):
@@ -145,7 +145,7 @@ class MediaList:
             rs = True
         except IOError:
             msg = f"ERROR: Can not scan directory: '{directory}'"
-            print(msg)
+            self.app.print(msg)
         finally:
             return rs
 
@@ -198,7 +198,7 @@ class MediaList:
             rs = self._current_item = mi
         except KeyError:
             msg = f"ERROR: Invalid media name: {alias}"
-            print(msg)
+            self.app.print(msg)
         finally:
             return rs
 
@@ -220,7 +220,7 @@ class MediaList:
                 rs = self._current_item.midi_file
             except AttributeError:
                 msg = f"ERROR: No media selected."
-                print(msg)
+                self.app.print(msg)
         else:
             mi = self.select(alias)
             if mi:
@@ -229,17 +229,18 @@ class MediaList:
     
     def dump(self):
         """Displays list contents."""
-        print("MediaList")
-        print(f"Directory : {self._directory}")
+        self.app.print("MediaList")
+        self.app.print(f"Directory : {self._directory}")
         for a in self.aliases:
             mi = self._items[a]
             header = " " 
             if mi is self._current_item:
                 header = "*"
-            print(f"{header} {mi}")
+            self.app.print(f"{header} {mi}")
 
     def selected_file_info(self):
-        return "TODO: Implement MediaList.selected_file_info"
+        s = f"MIDI File: {self._current_item.filename}"
+        return s
             
     def __str__(self):
         selected = "None"

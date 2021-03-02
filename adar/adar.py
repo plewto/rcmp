@@ -4,9 +4,10 @@ import os.path
 import sys
 import time
 import mido
-
 import adar.media
 import adar.options
+import adar.keyhandler
+import adar.oschandler
 
 APP = None
 
@@ -19,16 +20,42 @@ class Adar:
         self._osc_ip = None
         self._osc_port = None
         self._osc_prefix = None
-        self._stop_signal = True
-        self._exit_signal = False
         self._auto_exit = False
-        self.media_list = adar.media.MediaList()
+        self.stop_signal = True
+        self.exit_signal = False
+        self.media_list = adar.media.MediaList(self)
+        self._key_handler = adar.keyhandler.KeyHandler(self)
+        self._osc_handler = None
+        
+    @property
+    def midi_backend(self):
+        return self._midi_backend
 
+    @property
+    def midi_output_name(self):
+        return self._midi_output_name
+
+    @property
+    def midi_output_port(self):
+        return self._midi_output_port
+
+    @property
+    def osc_ip(self):
+        return self._osc_ip
+
+    @property
+    def osc_port(self):
+        return self._osc_port
+
+    @property
+    def osc_prefix(self):
+        return self._osc_prefix
+      
     def poll_osc(self):
-        pass # print("TODO Implement Adar.poll_osc")
+        self._osc_handler.poll()
 
     def poll_keyboard(self):
-        pass # print("TODO Implement Adar.poll_keyboard")
+        self._key_handler.poll()
 
     def all_notes_off(self):
         print("All notes off", flush=True)
@@ -41,32 +68,26 @@ class Adar:
 
     def _play_mode_loop(self):
         midi_file = self.media_list.midi_file()
-        counter = 0
         if midi_file and self._midi_output_port:
             for msg in midi_file:
                 time.sleep(msg.time)
                 if not msg.is_meta:
                     self._midi_output_port.send(msg)  ## TODO 
-                if not counter % 10:
-                    self.poll_osc()
-                    self.poll_keyboard()
-                counter += 1
-                if self._stop_signal or self._exit_signal:
+                if self.stop_signal or self.exit_signal:
                     break
-            self._stop_signal = True
+            self.stop_signal = True
             if self._auto_exit:
                 self.exit(0)
             else:
                 self.all_notes_off()
 
     def _stop_mode_loop(self):
-        while self._stop_signal:
-            self.poll_osc()
-            self.poll_keyboard()
+        while self.stop_signal and not self.exit_signal:
+            pass
 
     def mainloop(self):
-        while not self._exit_signal:
-            if self._stop_signal:
+        while not self.exit_signal:
+            if self.stop_signal:
                 self._stop_mode_loop()
             else:
                 self._play_mode_loop()
@@ -93,12 +114,13 @@ class Adar:
         print(f"\tself._osc_ip            --> {self._osc_ip}")
         print(f"\tself._osc_port          --> {self._osc_port}")
         print(f"\tself._osc_prefix        --> {self._osc_prefix}")
-        print(f"\tself._stop_signal       --> {self._stop_signal}")
-        print(f"\tself._exit_signal       --> {self._exit_signal}")
+        print(f"\tself.stop_signal       --> {self.stop_signal}")
+        print(f"\tself.exit_signal       --> {self.exit_signal}")
         print(f"\tself._auto_exit         --> {self._auto_exit}")
         self.media_list.dump()
 
     def exit(self, code=0):
+        self._key_handler.close()
         self.all_notes_off()
         # TODO close mido port
         # TODO close osc
@@ -122,10 +144,8 @@ class Adar:
             
     @classmethod
     def _configure_midi_output(cls, app, args):
-        print("_configure_midi_output")
         outputs = mido.get_output_names()
         out = args["out"]
-        print(f"DEBUG --out = {out}")
         name = port = None
         try:
             n = int(out)
@@ -150,7 +170,10 @@ class Adar:
                 
     @classmethod
     def _configure_osc(cls, app, args):
-        print("TODO Adar._configure_osc not implemented.")
+        app._osc_port = int(args["port"])
+        app._osc_ip = args["ip"]
+        app._osc_prefix = args["osc"]
+        app._osc_handler = adar.oschandler.OSCHandler(app)
              
     @classmethod
     def list_midi_outputs(cls, app):
@@ -188,6 +211,6 @@ class Adar:
         cls._configure_osc(APP, args)
         
         if args["play"] and APP.media_list.current_item:
-            APP._stop_signal = False
+            APP.stop_signal = False
         APP.mainloop()
         

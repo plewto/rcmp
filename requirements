@@ -6,5 +6,6 @@
 #
 
 mido
-osc4py3
+pyOSC3
+
 
