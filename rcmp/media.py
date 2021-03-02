@@ -249,7 +249,10 @@ class MediaList:
             print(f"{header} {mi}")
 
     def selected_file_info(self):
-        s = f"MIDI File: {self._current_item.filename}"
+        s = f"MIDI File: {self._current_item.filename}\n"
+        mf = self.midi_file()
+        if mf:
+            s += f"Length {mf.length} seconds."
         return s
             
     def __str__(self):
