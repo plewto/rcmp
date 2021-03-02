@@ -70,7 +70,10 @@ class OSCHandler:
         self.app.print_prompt()
         
     def poll(self):
-        self.server.handle_request()
-    
+        if self.server:
+            self.server.handle_request()
 
-    
+    def close(self):
+        self.server.close()
+        self.server = None
+        
