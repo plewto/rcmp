@@ -59,7 +59,7 @@ class Rcmp:
 
     def _start_osc_poll_loop(self):
         if not self._osc_poll_thread:
-            self._osc_poll_thread = Thread(target=self._osc_poll_callback)
+            self._osc_poll_thread = Thread(target=self._osc_poll_callback, daemon=True)
             self._osc_poll_thread.start()
 
     def print_prompt(self):
@@ -154,7 +154,8 @@ class Rcmp:
     def exit(self, code=0):
         print("Exit\n", flush=True)
         self.midi_reset()
-        sys.exit(code)
+        self._osc_handler.close()
+        raise SystemExit()
         
     @classmethod
     def _configure_midi_backend(cls, app, args):
