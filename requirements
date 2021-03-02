@@ -1,11 +1,13 @@
 # Adar requirements
 #
-# A suitable midi backend
-# See mido documentation for details.
+# python 3
+#
+# A suitable midi backend, see mido documentation for details.
+# https://mido.readthedocs.io/en/stable/backends.html
 # Using portmidi by default.
 #
 
-mido
-pyOSC3
+python -m pip install mido
+python -m pip install pyOSC3
 
 

@@ -12,10 +12,10 @@ def create_argparse():
                         help="Print information about MIDI file and exit.")
 
     parser.add_argument("-l", "--list", default=False, action="store_true",
-                        help="List available MIDI outputs.")
+                        help="List available MIDI outputs and exit.")
 
-    parser.add_argument("--docs", default=False, action="store_true",
-                        help="Display more detailed help.")
+    parser.add_argument("-?", "--docs", default=False, action="store_true",
+                        help="Display more detailed documentation and exit.")
 
     parser.add_argument("-b", "--backend", type=str, default="mido.backends.portmidi",
                         help="Set MIDI backend, see documentation for mido.")

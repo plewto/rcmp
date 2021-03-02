@@ -9,6 +9,7 @@ import mido
 import rcmp.media
 import rcmp.options
 import rcmp.oschandler
+import rcmp.docs
 
 APP = None
 
@@ -122,6 +123,8 @@ class Rcmp:
         self.exit()
                 
     def _configure_media_list(self, name, is_file):
+        if name and name[0] == '-':
+            return
         if name and is_file:
             abspath = os.path.abspath(name)
             alias  = os.path.splitext(os.path.basename(abspath))[0]
@@ -143,8 +146,8 @@ class Rcmp:
         print(f"\tself._osc_ip            --> {self._osc_ip}")
         print(f"\tself._osc_port          --> {self._osc_port}")
         print(f"\tself._osc_prefix        --> {self._osc_prefix}")
-        print(f"\tself.stop_signal       --> {self.stop_signal}")
-        print(f"\tself.exit_signal       --> {self.exit_signal}")
+        print(f"\tself.stop_signal        --> {self.stop_signal}")
+        print(f"\tself.exit_signal        --> {self.exit_signal}")
         print(f"\tself._auto_exit         --> {self._auto_exit}")
         self.media_list.dump()
 
@@ -220,7 +223,7 @@ class Rcmp:
         APP._configure_media_list(file_argument, is_file)
         
         if args["docs"]:
-            print("TODO general docs function not implemented")
+            print(rcmp.docs.DOCS)
             sys.exit(0)
 
         if args["info"]:

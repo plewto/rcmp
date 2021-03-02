@@ -1,6 +1,9 @@
 rcmp  ~ Remote Controlled MIDI file player.
 
+rcmp is a terminal based MIDI file player with OSC control.
 
+Navigate to top-level rcmp directory and run main.py with --docs option
+for documentation.
 
 
 

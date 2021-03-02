@@ -2,36 +2,7 @@
 
 import pyOSC3
 import sys
-
-OSC_HELP = """
-Rcmp OSC Commands:
-
-/rcmp/exit
-    Terminate application.
-    
-/rcmp/play
-    Start playback of selected MIDI file.
-    
-/rcmp/stop
-    Stop playback.
-    
-/rcmp/list
-    Display media-list contents.
-    
-/rcmp/info
-    Display details about currently selected MIDI file.
-    
-/rcmp/scan directory
-    Load each MIDI file in directory into media-list.
-    
-/rcmp/select file
-    Select file from media-list.
-
-/rcmp/help
-    Display this message.
-"""
-
-
+import rcmp.docs
 
 class OSCHandler:
 
@@ -95,7 +66,7 @@ class OSCHandler:
 
     def help_callback(self, *args):
         print()
-        print(OSC_HELP)
+        print(rcmp.docs.OSC_COMMANDS)
         self.app.print_prompt()
         
     def poll(self):
