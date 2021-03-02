@@ -5,7 +5,6 @@
 import argparse
 import os.path
 
-
 def create_argparse():
     parser = argparse.ArgumentParser(description="Play MIDI files under OSC control.")
 
@@ -40,8 +39,6 @@ def create_argparse():
                         help="Start playback of initial file immediately.")
 
     return parser
-
-
 
 
 def _is_file(s): 
