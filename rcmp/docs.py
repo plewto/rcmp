@@ -22,6 +22,8 @@ USAGE:
     and waits for OSC commands.    To terminate the program send
     the OSC message /rcmp/exit
 
+    NOTE: rcmp currently only handles single-track, type 0, MIDI files.
+
     -h --help
              Display auto-generated command-line help and exit.
 
@@ -60,7 +62,6 @@ USAGE:
            Immediately exit the program after playing the initial file.
            --exit only makes sense in conjunction with the --play
            option.
-
 """
 
 
