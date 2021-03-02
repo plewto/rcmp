@@ -8,7 +8,6 @@ import mido
 
 import adar.media
 import adar.options
-import adar.keyhandler
 import adar.oschandler
 
 APP = None
@@ -16,7 +15,8 @@ APP = None
 class Adar:
 
     def __init__(self):
-        self._poll_thread = None
+        self._osc_poll_thread = None
+        self._osc_handler = None
         self._midi_backend = None
         self._midi_output_name = None
         self._midi_output_port = None
@@ -27,8 +27,6 @@ class Adar:
         self.stop_signal = True
         self.exit_signal = False
         self.media_list = adar.media.MediaList(self)
-        self._key_handler = adar.keyhandler.KeyHandler(self)
-        self._osc_handler = None
         
     @property
     def midi_backend(self):
@@ -54,15 +52,18 @@ class Adar:
     def osc_prefix(self):
         return self._osc_prefix
 
-    def poll_user(self, *args):
+    def _osc_poll_callback(self, *args):
         while not self.exit_signal:
             self._osc_handler.poll()
-            self._key_handler.poll()
 
-    def start_poll_loop(self):
-        self._poll_thread = Thread(target=self.poll_user)
-        self._poll_thread.start()
-        
+    def _start_osc_poll_loop(self):
+        if not self._osc_poll_thread:
+            self._osc_poll_thread = Thread(target=self._osc_poll_callback)
+            self._osc_poll_thread.start()
+
+    def print_prompt(self):
+        print(f"{self.osc_prefix} : ", end = "", flush = True)
+            
     def midi_reset(self):
 
         def controller(channel, controller, value):
@@ -118,6 +119,7 @@ class Adar:
                 self._stop_mode_loop()
             else:
                 self._play_mode_loop()
+        self.exit()
                 
     def _configure_media_list(self, name, is_file):
         if name and is_file:
@@ -147,10 +149,8 @@ class Adar:
         self.media_list.dump()
 
     def exit(self, code=0):
-        self._key_handler.close()
+        print("Exit\n", flush=True)
         self.midi_reset()
-        # TODO close mido port
-        # TODO close osc
         sys.exit(code)
         
     @classmethod
@@ -209,7 +209,6 @@ class Adar:
         for i, name in enumerate(mido.get_output_names()):
             print(f"\t[{i}]  '{name}'")
         sys.exit(0)
-
         
     @classmethod
     def run(cls, argv):
@@ -239,7 +238,7 @@ class Adar:
         
         if args["play"] and APP.media_list.current_item:
             APP.stop_signal = False
-        APP.start_poll_loop()
-        print("Starting mainloop")
+        APP._start_osc_poll_loop()
+        APP.print_prompt()
         APP.mainloop()
         
