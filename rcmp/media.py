@@ -109,8 +109,7 @@ class MediaList:
                 The filename extension is ignored.
         """
         mi = MediaItem(filename)
-        if mi.midi_file:
-            self._items[mi.alias] = mi
+        self._items[mi.alias] = mi
 
     # Automatically marks the first filename as 'selected',
     # but only if there is not a currently selected file.
@@ -139,6 +138,7 @@ class MediaList:
         directory = path.expanduser(directory)
         try:
             for file_name in os.listdir(directory):
+                print(f"DEBUG scan file_name = {file_name}")
                 if self.accept(file_name):
                     self.add(path.join(directory, file_name))
                     self._directory = directory
