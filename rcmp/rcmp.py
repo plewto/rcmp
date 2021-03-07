@@ -5,13 +5,11 @@ import sys
 from threading import Thread
 import time
 import mido
-
 import rcmp.media
 import rcmp.options
 import rcmp.oschandler
 import rcmp.docs
 
-APP = None
 
 class Rcmp:
 
@@ -216,29 +214,28 @@ class Rcmp:
         
     @classmethod
     def run(cls, argv):
-        global APP
-        APP = Rcmp()
+        app = Rcmp()
         parser = rcmp.options.create_argparse()
         file_argument, is_file, argv = rcmp.options.extract_file_argument(argv)
         args = vars(parser.parse_args(argv))
-        APP._configure_media_list(file_argument, is_file)
+        app._configure_media_list(file_argument, is_file)
         
         if args["docs"]:
             print(rcmp.docs.DOCS)
             sys.exit(0)
         
-        APP._auto_exit = args["exit"]
-        cls._configure_midi_backend(APP, args)
+        app._auto_exit = args["exit"]
+        cls._configure_midi_backend(app, args)
 
         if args["list"]:
-            cls.list_midi_outputs(APP)
+            cls.list_midi_outputs(app)
         
-        cls._configure_midi_output(APP, args)
-        cls._configure_osc(APP, args)
+        cls._configure_midi_output(app, args)
+        cls._configure_osc(app, args)
         
-        if args["play"] and APP.media_list.current_item:
-            APP.stop_signal = False
-        APP._start_osc_poll_loop()
-        APP.print_prompt()
-        APP.mainloop()
+        if args["play"] and app.media_list.current_item:
+            app.stop_signal = False
+        app._start_osc_poll_loop()
+        app.print_prompt()
+        app.mainloop()
         
