@@ -134,9 +134,9 @@ class MediaList:
                False if directory could no be read.
                True if directory contents were read.
         """
-
         rs = False
         self.clear()
+        directory = path.expanduser(directory)
         try:
             for file_name in os.listdir(directory):
                 if self.accept(file_name):
