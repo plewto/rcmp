@@ -74,7 +74,7 @@ class Rcmp:
             controller(c, 1, 0)     # reset modulation wheel
             controller(c, 69, 0)    # sustain pedal off
             controller(c, 123, 127) # all notes off
-            controller(c, 10, 127)  # volume
+            controller(c, 7, 127)   # volume
             for key in range(0, 128):
                 msg = mido.Message("note_off", channel=c, note=key)
                 self._midi_output_port.send(msg)
